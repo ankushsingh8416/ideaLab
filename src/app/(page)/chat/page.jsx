@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare, User, FileText, Menu, X, Trash2, AlertCircle, RefreshCw, Brain, Sparkles, BookOpen, Target } from 'lucide-react';
+import { Send, MessageSquare, User, FileText, Menu, X, Trash2, AlertCircle, RefreshCw, Brain, Sparkles, BookOpen, Target, Plus } from 'lucide-react';
 import useCollectionStore from '@/store/activechatStore';
 import MessageRenderer from '@/app/components/MessageDisplay';
 import { useRouter } from 'next/navigation';
@@ -69,6 +69,37 @@ const IdeaLabChat = () => {
     setChatHistory([defaultChat]);
     setMessages([]);
   }, [collectionName]);
+
+  const createNewChat = () => {
+    // Save current messages to current chat before creating new one
+    const updatedHistory = chatHistory.map(chat => 
+      chat.id === activeChat 
+        ? { ...chat, messages: messages, active: false }
+        : { ...chat, active: false }
+    );
+
+    // Create new chat
+    const newChatId = `chat-${Date.now()}`;
+    const newChat = {
+      id: newChatId,
+      title: 'New Chat',
+      preview: 'Start a new conversation',
+      time: 'Now',
+      active: true,
+      messages: [],
+      collectionName: collectionName
+    };
+
+    // Add new chat to history
+    const newChatHistory = [newChat, ...updatedHistory];
+    setChatHistory(newChatHistory);
+    
+    // Switch to new chat
+    setActiveChat(newChatId);
+    setMessages([]);
+    setError(null);
+    setRetryCount(0);
+  };
 
   const switchChat = (chatId) => {
     // Save current messages to current chat
@@ -173,7 +204,7 @@ const IdeaLabChat = () => {
     setMessages(newMessages);
 
     const currentChat = chatHistory.find(chat => chat.id === activeChat);
-    if (currentChat && (currentChat.title === 'Chat with Documents' || messages.length === 0)) {
+    if (currentChat && (currentChat.title === 'Chat with Documents' || currentChat.title === 'New Chat' || messages.length === 0)) {
       const title = inputMessage.slice(0, 30) + (inputMessage.length > 30 ? '...' : '');
       updateChatTitle(activeChat, title);
     }
@@ -267,7 +298,7 @@ const IdeaLabChat = () => {
           {sources.map((source, index) => (
             <span
               key={index}
-              className={`text-xs px-2 py-1 rounded-full ${
+              className={`text-xs px-2 py-1 rounded-full cursor-pointer ${
                 source.relevance === 'high' ? 'bg-green-100 text-green-800' :
                 source.relevance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                 'bg-gray-100 text-gray-600'
@@ -309,13 +340,22 @@ const IdeaLabChat = () => {
               <X className="w-4 h-4 text-gray-500" />
             </button>
           </div>
+
+          {/* New Chat Button */}
+          <button
+            onClick={createNewChat}
+            className=" my-4 w-full p-3 bg-gradient-to-r hover:from-orange-300 hover:to-orange-400 from-orange-400 to-orange-500 text-white rounded-2xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="font-medium">New Chat</span>
+          </button>
         </div>
 
         {/* Chat History */}
         <div className="flex-1 overflow-y-auto p-4">
           <h2 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
             <MessageSquare className="w-4 h-4 mr-2" />
-            Active Chat
+            Chat History
           </h2>
           {chatHistory.length === 0 ? (
             <div className="text-center py-8">
@@ -355,7 +395,7 @@ const IdeaLabChat = () => {
                     {chatHistory.length > 1 && (
                       <button
                         onClick={(e) => deleteChat(chat.id, e)}
-                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg transition-all"
+                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
                       >
                         <Trash2 className="w-3 h-3 text-red-500" />
                       </button>
@@ -375,7 +415,7 @@ const IdeaLabChat = () => {
           <div className="flex items-center space-x-3">
             {!sidebarOpen && (
               <button
-                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="w-5 h-5 text-gray-600" />
@@ -410,7 +450,7 @@ const IdeaLabChat = () => {
               {retryCount > 0 && (
                 <button
                   onClick={retryLastMessage}
-                  className="text-sm text-red-600 hover:text-red-800 flex items-center space-x-1 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors"
+                  className="text-sm text-red-600 hover:text-red-800 flex items-center space-x-1 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
                 >
                   <RefreshCw className="w-3 h-3" />
                   <span>Retry</span>

@@ -112,8 +112,9 @@ export async function POST(req) {
           });
 
           console.log(`Successfully loaded content from ${url}`);
-          console.log(`Content length: ${docs[0]?.pageContent?.length || 0} characters`);
 
+          
+          
         } catch (error) {
           console.error(`Error loading URL ${url}:`, error.message);
           return NextResponse.json(

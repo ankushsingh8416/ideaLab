@@ -63,7 +63,7 @@ const UploadTab = () => {
     ];
 
     if (!allowedTypes.includes(selectedFile.type)) {
-      toast.error("Only PDF, DOCX, DOC, or TXT files are allowed.");
+      toast.error("Only PDF, TXT files are allowed.");
       e.target.value = "";
       return;
     }
