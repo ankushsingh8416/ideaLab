@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare, User, FileText, Menu, X, Trash2, AlertCircle, RefreshCw, Brain, Sparkles, BookOpen, Target, Plus } from 'lucide-react';
+import { Send, MessageSquare, User, FileText, Menu, X, Trash2, AlertCircle, RefreshCw, Brain, Sparkles, BookOpen, Target, Plus, ArrowLeft } from 'lucide-react';
 import useCollectionStore from '@/store/activechatStore';
 import MessageRenderer from '@/app/components/MessageDisplay';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const IdeaLabChat = () => {
   const [messages, setMessages] = useState([]);
@@ -72,8 +73,8 @@ const IdeaLabChat = () => {
 
   const createNewChat = () => {
     // Save current messages to current chat before creating new one
-    const updatedHistory = chatHistory.map(chat => 
-      chat.id === activeChat 
+    const updatedHistory = chatHistory.map(chat =>
+      chat.id === activeChat
         ? { ...chat, messages: messages, active: false }
         : { ...chat, active: false }
     );
@@ -93,7 +94,7 @@ const IdeaLabChat = () => {
     // Add new chat to history
     const newChatHistory = [newChat, ...updatedHistory];
     setChatHistory(newChatHistory);
-    
+
     // Switch to new chat
     setActiveChat(newChatId);
     setMessages([]);
@@ -295,18 +296,36 @@ const IdeaLabChat = () => {
       <div className="mt-3 pt-3 border-t border-gray-100">
         <p className="text-xs text-gray-500 mb-2">Sources:</p>
         <div className="flex flex-wrap gap-1">
-          {sources.map((source, index) => (
-            <span
-              key={index}
-              className={`text-xs px-2 py-1 rounded-full cursor-pointer ${
-                source.relevance === 'high' ? 'bg-green-100 text-green-800' :
-                source.relevance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-gray-100 text-gray-600'
-              }`}
-            >
-              {source.source} ({Math.round(source.score * 100)}%)
-            </span>
-          ))}
+          {sources.map((source, index) => {
+            const isLink = source.source.startsWith("https");
+            const content = (
+              <span
+                className={`text-xs px-2 py-1 rounded-full cursor-pointer ${source.relevance === 'high'
+                    ? 'bg-green-100 text-green-800'
+                    : source.relevance === 'medium'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+              >
+                {source.source} ({Math.round(source.score * 100)}%)
+              </span>
+            );
+
+            return isLink ? (
+              <a
+                key={index}
+                href={source.source}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600"
+              >
+                {content}
+              </a>
+            ) : (
+              <span key={index}>{content}</span>
+            );
+          })}
+
         </div>
       </div>
     );
@@ -367,11 +386,10 @@ const IdeaLabChat = () => {
               {chatHistory.map(chat => (
                 <div
                   key={chat.id}
-                  className={`group p-3 rounded-2xl cursor-pointer transition-all duration-200 relative ${
-                    chat.active
-                      ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200'
-                      : 'hover:bg-gray-50 border-2 border-transparent'
-                  }`}
+                  className={`group p-3 rounded-2xl cursor-pointer transition-all duration-200 relative ${chat.active
+                    ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200'
+                    : 'hover:bg-gray-50 border-2 border-transparent'
+                    }`}
                   onClick={() => switchChat(chat.id)}
                 >
                   <div className="flex items-start space-x-3">
@@ -412,7 +430,7 @@ const IdeaLabChat = () => {
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div className="p-4 bg-white border-b shadow-lg border-gray-200">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-between space-x-3">
             {!sidebarOpen && (
               <button
                 className="p-2 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
@@ -436,6 +454,14 @@ const IdeaLabChat = () => {
                 </p>
               </div>
             </div>
+            <Link
+              href={"/sources"}
+              className="flex items-center gap-2 px-4 rounded-full border-2 border-red-500 bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:scale-105 transition-all duration-200"
+            >
+              <ArrowLeft className="h-3 w-3" /> {/* smaller icon */}
+              <span>Exit</span>
+            </Link>
+
           </div>
         </div>
 
@@ -505,11 +531,10 @@ const IdeaLabChat = () => {
                   <div className={`max-w-2xl ${message.type === 'user' ? 'text-right' : ''}`}>
                     <div className="flex items-start space-x-3">
                       {(message.type === 'bot' || message.type === 'error') && (
-                        <div className={`w-8 h-8 ${
-                          message.type === 'error' 
-                            ? 'bg-gradient-to-br from-red-500 to-red-600' 
-                            : 'bg-gradient-to-br from-orange-500 to-orange-600'
-                        } rounded-2xl flex text-white items-center justify-center flex-shrink-0 mt-1 shadow-lg`}>
+                        <div className={`w-8 h-8 ${message.type === 'error'
+                          ? 'bg-gradient-to-br from-red-500 to-red-600'
+                          : 'bg-gradient-to-br from-orange-500 to-orange-600'
+                          } rounded-2xl flex text-white items-center justify-center flex-shrink-0 mt-1 shadow-lg`}>
                           {message.type === 'error' ? (
                             <AlertCircle className="w-4 h-4 text-white" />
                           ) : (
@@ -517,13 +542,12 @@ const IdeaLabChat = () => {
                           )}
                         </div>
                       )}
-                      <div className={`px-5 py-4 rounded-3xl shadow-sm ${
-                        message.type === 'user'
-                          ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-tr-lg'
-                          : message.type === 'error'
-                            ? 'bg-red-50 text-red-800 rounded-tl-lg border border-red-200'
-                            : 'bg-white text-gray-800 rounded-tl-lg border border-gray-200'
-                      }`}>
+                      <div className={`px-5 py-4 rounded-3xl shadow-sm ${message.type === 'user'
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-tr-lg'
+                        : message.type === 'error'
+                          ? 'bg-red-50 text-red-800 rounded-tl-lg border border-red-200'
+                          : 'bg-white text-gray-800 rounded-tl-lg border border-gray-200'
+                        }`}>
                         <MessageRenderer content={message.content} />
                         {message.sources && <MessageSources sources={message.sources} />}
                       </div>
@@ -533,9 +557,8 @@ const IdeaLabChat = () => {
                         </div>
                       )}
                     </div>
-                    <p className={`text-xs text-gray-400 mt-2 ${
-                      message.type === 'user' ? 'mr-11' : 'ml-11'
-                    }`}>
+                    <p className={`text-xs text-gray-400 mt-2 ${message.type === 'user' ? 'mr-11' : 'ml-11'
+                      }`}>
                       {message.time}
                     </p>
                   </div>

@@ -113,8 +113,6 @@ export async function POST(req) {
 
           console.log(`Successfully loaded content from ${url}`);
 
-          
-          
         } catch (error) {
           console.error(`Error loading URL ${url}:`, error.message);
           return NextResponse.json(

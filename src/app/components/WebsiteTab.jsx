@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { FiLink } from "react-icons/fi";
+import { FiLink, FiLoader } from "react-icons/fi";
 import { useState } from "react";
 import useUrlStore from "@/store/urlStore";
 import toast from "react-hot-toast";
@@ -11,10 +11,11 @@ const WebsiteTab = () => {
   const { addUrl, urls } = useUrlStore();
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const { setCollectionName } = useCollectionStore();
 
-  console.log(urls)
+  console.log(urls);
+
   const handleWebsiteUrl = async () => {
     if (!websiteUrl.trim()) return;
 
@@ -40,8 +41,8 @@ const WebsiteTab = () => {
 
       setWebsiteUrl(""); // clear input
       toast.success("Website imported successfully ✅");
-      setCollectionName(collectionName)
-      router.push("/chat")
+      setCollectionName(collectionName);
+      router.push("/chat");
     } catch (err) {
       console.error(err);
       toast.error("Error importing website ❌");
@@ -79,16 +80,36 @@ const WebsiteTab = () => {
           onChange={(e) => setWebsiteUrl(e.target.value)}
           placeholder="https://example.com/article"
           className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-yellow-400 focus:outline-none text-gray-700"
+          disabled={loading}
         />
+        
         <button
           onClick={handleWebsiteUrl}
           disabled={!websiteUrl.trim() || loading}
-          className="flex items cursor-pointer-center gap-2 bg-black text-yellow-400 px-8 py-3 rounded-full font-medium hover:bg-gray-900 hover:scale-105 transition-all disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed mx-auto"
+          className={`
+            flex items-center justify-center gap-2 
+            px-8 py-3 rounded-full font-medium 
+            transition-all duration-200 mx-auto
+            min-w-[160px]
+            ${loading 
+              ? 'bg-gray-100 text-gray-600 cursor-not-allowed' 
+              : 'bg-black text-yellow-400 hover:bg-gray-900 hover:scale-105 cursor-pointer'
+            }
+            ${!websiteUrl.trim() && !loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}
+          `}
         >
-          <FiLink className="h-5 w-5" />
-          <span>{loading ? "Importing..." : "Import Website"}</span>
+          {loading ? (
+            <>
+              <FiLoader className="h-5 w-5 animate-spin" />
+              <span>Importing...</span>
+            </>
+          ) : (
+            <>
+              <FiLink className="h-5 w-5" />
+              <span>Import Website</span>
+            </>
+          )}
         </button>
-
       </div>
     </div>
   );

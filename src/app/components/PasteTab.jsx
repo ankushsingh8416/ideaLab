@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { FiEdit3 } from "react-icons/fi";
+import { FiEdit3, FiLink, FiLoader } from "react-icons/fi";
 import { useState } from "react";
 import useContentStore from "@/store/contentStore";
 import toast from "react-hot-toast";
@@ -71,8 +71,7 @@ const PasteTab = () => {
           Paste Your Content
         </h3>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Copy & paste any text content to analyze. Articles, emails, notes – paste it here and chat instantly.
-        </p>
+          Paste any text (100+ words) to analyze instantly – articles, emails, or notes.        </p>
       </div>
 
       <div className="w-full max-w-2xl space-y-4">
@@ -88,8 +87,18 @@ const PasteTab = () => {
             disabled={!pastedContent.trim() || loading}
             className="flex cursor-pointer items-center gap-2 bg-black text-yellow-400 px-8 py-3 rounded-full font-medium hover:bg-gray-900 hover:scale-105 transition-all disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed "
           >
-            <FiEdit3 className="h-5 w-5" />
-            <span>{loading ? "Processing..." : "Process Content"}</span>
+
+            {loading ? (
+              <>
+                <FiLoader className="h-5 w-5 animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <FiLink className="h-5 w-5" />
+                <span>Process Content</span>
+              </>
+            )}
           </button>
 
 
