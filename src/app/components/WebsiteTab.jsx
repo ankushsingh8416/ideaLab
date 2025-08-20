@@ -54,7 +54,7 @@ const WebsiteTab = () => {
     <div className="p-10 md:p-14 lg:p-16 flex flex-col items-center justify-center">
       <div className="relative w-28 h-28 transition-transform hover:scale-110 mb-4">
         <Image
-          src="/images/Link.png"
+          src="/images/link.png"
           alt="Import website"
           fill
           className="object-contain"
