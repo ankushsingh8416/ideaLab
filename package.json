@@ -1,0 +1,38 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.53",
+    "@langchain/core": "^0.3.72",
+    "@langchain/google-genai": "^0.2.16",
+    "@langchain/textsplitters": "^0.1.0",
+    "@pinecone-database/pinecone": "^6.1.2",
+    "@qdrant/js-client-rest": "^1.15.1",
+    "cheerio": "^1.1.2",
+    "framer-motion": "^12.23.12",
+    "langchain": "^0.3.31",
+    "lucide-react": "^0.540.0",
+    "motion": "^12.23.12",
+    "next": "15.4.7",
+    "openai": "^5.12.2",
+    "pdf-parse": "^1.1.1",
+    "razorpay": "^2.9.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.5.0",
+    "react-syntax-highlighter": "^15.6.1",
+    "zustand": "^5.0.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
+  }
+}
